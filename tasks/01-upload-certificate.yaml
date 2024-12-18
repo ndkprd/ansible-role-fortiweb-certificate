@@ -1,0 +1,48 @@
+---
+
+- name: Construct timestamped certificate file name.
+  connection: local
+  vars:
+    timestamp: "{{ lookup('pipe', 'date +%Y%m%d%H%M') }}"
+    cert_dir: "{{ fortiweb_certificate_file | dirname }}"
+    cert_basename: "{{ fortiweb_certificate_file | basename }}"
+  ansible.builtin.set_fact:
+    cert_upload_dir: "{{ cert_dir }}/{{ timestamp }}_{{ cert_basename }}"
+    cert_upload_name: "{{ timestamp + '_' + cert_basename | regex_replace('\\.[^.]+$', '') }}"
+
+- name: Debug.
+  connection: local
+  ansible.builtin.debug:
+    msg:
+      - "fortiweb_certificate_vdom: {{ fortiweb_certificate_vdom }}"
+      - "cert_upload_name: {{ cert_upload_name }}"
+      - "cert_upload_dir: {{ cert_upload_dir }}"
+      - "fortiweb_certificate_private_key: {{ fortiweb_certificate_private_key }}"
+      - "ansible_user: {{ ansible_user }}"
+      - "ansible_host: {{ ansible_host }}"
+      - "ansible_network_os: {{ ansible_network_os }}"
+      - "ansible_httpapi_use_ssl: {{ ansible_httpapi_use_ssl }}"
+      - "ansible_httpapi_validate_certs: {{ ansible_httpapi_validate_certs }}"
+      - "ansible_httpapi_port: {{ ansible_httpapi_port }}"
+
+- name: Add timestamp to certificate file.
+  connection: local
+  become: true
+  ansible.builtin.copy:
+    src: "{{ fortiweb_certificate_file }}"
+    dest: "{{ cert_upload_dir }}"
+    mode: "770"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Upload certificate file.
+  fortinet.fortiweb.fwebos_certificate_local_import_certificate:
+    action: add
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    type: certificate
+    certificateFile: "{{ cert_upload_dir }}"
+    keyFile: "{{ fortiweb_certificate_private_key }}"
+    password: ""
+    hsm: ""
+  # register: results
+  # no_log: true
