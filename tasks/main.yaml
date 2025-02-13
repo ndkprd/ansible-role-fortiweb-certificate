@@ -1,15 +1,10 @@
 ---
 
-# - name: Run pre-tasks.
-#   ansible.builtin.import_tasks: 00-pre-tasks.yaml
+- name: Run pre-tasks.
+  ansible.builtin.import_tasks: 00-pre-tasks.yaml
 
 - name: Upload SSL certificates.
   ansible.builtin.import_tasks: 01-upload-certificate.yaml
 
-- name: Upload intermediate certificates.
-  ansible.builtin.import_tasks: 02-upload-intermediate-certificate.yaml
-  when:
-    - fortiweb_certificate_intermediate is defined
-
 - name: Add certificate to server policy.
-  ansible.builtin.import_tasks: 03-add-certificate-to-server.yaml
+  ansible.builtin.import_tasks: 02-add-certificate-to-server.yaml

@@ -1,0 +1,23 @@
+---
+
+- name: Set server policy certificate to default.
+  become: true
+  fortinet.fortiweb.fwebos_server_policy:
+    action: edit
+    name: "{{ item.server_policy }}"
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    certificate: "Fortinet_Factory"
+    # intermediate_certificate_group: "{{ inter_cert_group_name | default(omit) }}"
+  loop: "{{ fortiweb_certificates }}"
+  loop_control:
+    label: "{{ item.domain }}"
+
+- name: Delete existing certificate.
+  become: true
+  fortinet.fortiweb.fwebos_certificate_local_import_certificate:
+    action: delete
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    name: "{{ item.domain }}"
+  loop: "{{ fortiweb_certificates }}"
+  loop_control:
+    label: "{{ item.domain }}"

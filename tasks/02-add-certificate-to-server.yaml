@@ -1,0 +1,12 @@
+---
+
+- name: Add certificate to server policy.
+  become: true
+  fortinet.fortiweb.fwebos_server_policy:
+    action: edit
+    name: "{{ item.server_policy }}"
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    certificate: "{{ item.domain }}"
+  loop: "{{ fortiweb_certificates }}"
+  loop_control:
+    label: "{{ item.domain }}"
