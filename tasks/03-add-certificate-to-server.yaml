@@ -7,6 +7,7 @@
     name: "{{ item.server_policy }}"
     vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
     certificate: "{{ item.domain }}"
+    intermediate_certificate_group: "{{ item.domain }}_intermediate"
   loop: "{{ fortiweb_certificates }}"
   loop_control:
     label: "{{ item.domain }}"

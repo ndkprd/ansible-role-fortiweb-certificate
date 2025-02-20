@@ -1,0 +1,35 @@
+---
+
+- name: Upload intermediate certificate file.
+  fortinet.fortiweb.fwebos_certificate_intermediate_ca:
+    action: add
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    type: localPC
+    uploadedFile: "{{ item.certificate_intermediate }}"
+
+- name: Get the uploaded name.
+  fortinet.fortiweb.fwebos_certificate_intermediate_ca:
+    action: get
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+  register: get_intermediate_ca
+
+- name: Register the uploaded name to a var.
+  ansible.builtin.set_fact:
+    inter_cert_name: "{{ (get_intermediate_ca.res.results | last).name }}"
+
+- name: Define the intermediate CA group name.
+  ansible.builtin.set_fact:
+    inter_cert_group_name: "{{ item.domain }}_intermediate"
+
+- name: Create new intermediate CA group.
+  fortinet.fortiweb.fwebos_certificate_intermediate_ca_group:
+    action: add
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    name: "{{ inter_cert_group_name }}"
+
+- name: Add intermediate CA to group.
+  fortinet.fortiweb.fwebos_certificate_intermediate_ca_group_member:
+    action: add
+    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    table_name: "{{ inter_cert_group_name }}"
+    name: "{{ inter_cert_name }}"

@@ -6,5 +6,11 @@
 - name: Upload SSL certificates.
   ansible.builtin.import_tasks: 01-upload-certificate.yaml
 
+- name: Upload intermediate certificates.
+  ansible.builtin.include_tasks: 02-upload-intermediate-certificate.yaml
+  loop: "{{ fortiweb_certificates }}"
+  loop_control:
+    label: "{{ item.domain }}"
+
 - name: Add certificate to server policy.
-  ansible.builtin.import_tasks: 02-add-certificate-to-server.yaml
+  ansible.builtin.import_tasks: 03-add-certificate-to-server.yaml
