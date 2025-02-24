@@ -1,13 +1,14 @@
 ---
 
 - name: Add certificate to server policy.
-  become: true
+  connection: httpapi
   fortinet.fortiweb.fwebos_server_policy:
     action: edit
     name: "{{ item.server_policy }}"
     vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
     certificate: "{{ item.domain }}"
     intermediate_certificate_group: "{{ item.domain }}_intermediate"
+  changed_when: false
   loop: "{{ fortiweb_certificates }}"
   loop_control:
     label: "{{ item.domain }}"

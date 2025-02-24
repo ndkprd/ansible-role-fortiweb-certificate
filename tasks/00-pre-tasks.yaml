@@ -1,23 +1,40 @@
 ---
 
 - name: Set server policy certificate to default.
-  become: true
+  connection: httpapi
   fortinet.fortiweb.fwebos_server_policy:
     action: edit
     name: "{{ item.server_policy }}"
-    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    vdom: "{{ fortiweb_certificate_vdom }}"
     certificate: "Fortinet_Factory"
     # intermediate_certificate_group: "{{ inter_cert_group_name | default(omit) }}"
+  changed_when: false
   loop: "{{ fortiweb_certificates }}"
   loop_control:
     label: "{{ item.domain }}"
 
+- name: Gather existing certificate facts.
+  connection: httpapi
+  fortinet.fortiweb.fwebos_certificate_local_import_certificate:
+    action: get
+    vdom: "{{ fortiweb_certificate_vdom }}"
+  no_log: true
+  register: certificate_get_result
+
+- name: Set existing_certs list.
+  connection: local
+  ansible.builtin.set_fact:
+    existing_certs: "{{ certificate_get_result.res.results | map(attribute='name') | list }}"
+
 - name: Delete existing certificate.
-  become: true
+  connection: httpapi
   fortinet.fortiweb.fwebos_certificate_local_import_certificate:
     action: delete
-    vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
+    vdom: "{{ fortiweb_certificate_vdom }}"
     name: "{{ item.domain }}"
   loop: "{{ fortiweb_certificates }}"
   loop_control:
     label: "{{ item.domain }}"
+  changed_when: false
+  when:
+    - item.domain in existing_certs

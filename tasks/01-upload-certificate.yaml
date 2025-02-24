@@ -1,7 +1,7 @@
 ---
 
 - name: Upload certificate file.
-  become: true
+  connection: httpapi
   fortinet.fortiweb.fwebos_certificate_local_import_certificate:
     action: add
     vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
@@ -10,8 +10,7 @@
     keyFile: "{{ item.private_key }}"
     password: ""
     hsm: ""
-  # register: results
-  # no_log: true
+  changed_when: false
   loop: "{{ fortiweb_certificates }}"
   loop_control:
     label: "{{ item.domain }}"

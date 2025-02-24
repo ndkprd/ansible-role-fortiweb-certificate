@@ -1,7 +1,3 @@
 ---
 
-# fortiweb_certificate_vdom: "{{ fortiweb_certificate_vdom | default('root') }}"
-# fortiweb_certificate_file: "{{ fortiweb_certificate_file | undef(hint='You must define the certificate file path.') }}"
-# fortiweb_certificate_private_key: "{{ fortiweb_certificate_private_key | undef(hint='You must define the private key file path.') }}"
-# fortiweb_certificate_intermediate: "{{ fortiweb_certificate_intermediate | default(omit) }}"
-# fortiweb_certificate_server_policy: "local_waf.dev.asdp.id"
+fortiweb_certificate_vdom: root
