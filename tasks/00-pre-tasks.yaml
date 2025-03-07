@@ -32,7 +32,7 @@
     action: delete
     vdom: "{{ fortiweb_certificate_vdom }}"
     name: "{{ item.domain }}"
-  loop: "{{ fortiweb_certificates }}"
+  loop: "{{ fortiweb_certificates | unique(attribute='domain') }}"
   loop_control:
     label: "{{ item.domain }}"
   changed_when: false
