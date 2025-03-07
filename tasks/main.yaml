@@ -8,7 +8,7 @@
 
 - name: Upload intermediate certificates.
   ansible.builtin.include_tasks: 02-upload-intermediate-certificate.yaml
-  loop: "{{ fortiweb_certificates }}"
+  loop: "{{ fortiweb_certificates | unique(attribute='domain') }}"
   loop_control:
     label: "{{ item.domain }}"
 

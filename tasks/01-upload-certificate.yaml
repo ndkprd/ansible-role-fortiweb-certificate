@@ -11,6 +11,6 @@
     password: ""
     hsm: ""
   changed_when: false
-  loop: "{{ fortiweb_certificates }}"
+  loop: "{{ fortiweb_certificates | unique(attribute='domain') }}"
   loop_control:
     label: "{{ item.domain }}"
